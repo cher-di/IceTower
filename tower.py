@@ -24,6 +24,7 @@ def exit_gracefully(signum, frame):
     global TOWER
     logging.info('Caught {}, shutdown gracefully'.format(signal.strsignal(signum)))
     TOWER.off()
+    sys.exit(0)
 
 signal.signal(signal.SIGTERM, exit_gracefully)
 signal.signal(signal.SIGINT, exit_gracefully)
