@@ -64,7 +64,9 @@ def main(args: dict):
     measurements = deque(maxlen=args['window'])
     while True:
         time.sleep(args['delay'])
-        measurements.append(current_cpu_temperature())
+        temp = current_cpu_temperature()
+        measurements.append(temp)
+        logging.info('Current CPU temperature: {}'.format(temp))
         if tower.value == 0:
             actual_percentage = count_percentage(
                 measurements, lambda x: x > args['temperature'])
