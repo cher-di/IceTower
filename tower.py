@@ -1,5 +1,6 @@
 import argparse
 import logging
+import signal
 import sys
 import time
 
@@ -15,6 +16,17 @@ logging.basicConfig(stream=sys.stdout,
 
 
 AVAILABLE_GPIO_PINS = list(range(2, 28))
+
+TOWER = None
+
+def exit_gracefully(signum, frame):
+    del frame
+    global TOWER
+    logging.info('Caught {}, shutdown gracefully'.format(signal.strsignal(signum)))
+    TOWER.off()
+
+signal.signal(signal.SIGTERM, exit_gracefully)
+signal.signal(signal.SIGINT, exit_gracefully)
 
 
 def current_cpu_temperature():
@@ -60,6 +72,7 @@ def parse_args(args: list) -> argparse.Namespace:
 
 def main(args: dict):
     tower = gpiozero.OutputDevice(args['pin'])
+    TOWER = tower
     measurements = deque(maxlen=args['window'])
     while True:
         time.sleep(args['delay'])
