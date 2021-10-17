@@ -71,6 +71,7 @@ def parse_args(args: list) -> argparse.Namespace:
 
 
 def main(args: dict):
+    global TOWER
     tower = gpiozero.OutputDevice(args['pin'])
     TOWER = tower
     measurements = deque(maxlen=args['window'])
