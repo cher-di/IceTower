@@ -10,6 +10,8 @@ import psutil
 from collections import deque
 from typing import Sequence, Callable
 
+from gpiozero.pins.native import NativeFactory
+
 logging.basicConfig(stream=sys.stdout,
                     level=logging.INFO,
                     format='%(asctime)s [%(levelname)s] %(message)s')
@@ -60,7 +62,7 @@ def parse_args(args: list) -> argparse.Namespace:
 
 
 def main(args: dict):
-    tower = gpiozero.OutputDevice(args['pin'])
+    tower = gpiozero.OutputDevice(args['pin'], pin_factory=NativeFactory)
     measurements = deque(maxlen=args['window'])
     while True:
         time.sleep(args['delay'])
