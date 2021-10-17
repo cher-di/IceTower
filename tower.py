@@ -23,6 +23,7 @@ def exit_gracefully(signum, frame):
     del frame
     global TOWER
     logging.info('Caught {}, shutdown gracefully'.format(signal.strsignal(signum)))
+    logging.info('OFF ice tower')
     TOWER.off()
     sys.exit(0)
 
