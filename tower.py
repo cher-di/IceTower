@@ -19,13 +19,14 @@ AVAILABLE_GPIO_PINS = list(range(2, 28))
 
 TOWER = None
 
+
 def exit_gracefully(signum, frame):
     del frame
     global TOWER
     logging.info('Caught {}, shutdown gracefully'.format(signal.strsignal(signum)))
-    logging.info('OFF ice tower')
     TOWER.off()
     sys.exit(0)
+
 
 signal.signal(signal.SIGTERM, exit_gracefully)
 signal.signal(signal.SIGINT, exit_gracefully)
@@ -38,6 +39,20 @@ def current_cpu_temperature():
 def count_percentage(values: Sequence, comparator: Callable):
     suitable = list(filter(comparator, values))
     return len(suitable) / len(values) * 100
+
+
+class IceTower(gpiozero.OutputDevice):
+
+    def __init__(self, pin: int):
+        super(IceTower, self).__init__(pin, initial_value=None)
+
+    def on(self):
+        logging.info('ON ice tower')
+        super(IceTower, self).on()
+
+    def off(self):
+        logging.info('OFF ice tower')
+        super(IceTower, self).off()
 
 
 def parse_args(args: list) -> argparse.Namespace:
@@ -74,7 +89,7 @@ def parse_args(args: list) -> argparse.Namespace:
 
 def main(args: dict):
     global TOWER
-    tower = gpiozero.OutputDevice(args['pin'])
+    tower = IceTower(args['pin'])
     TOWER = tower
     measurements = deque(maxlen=args['window'])
     while True:
@@ -82,18 +97,17 @@ def main(args: dict):
         temp = current_cpu_temperature()
         measurements.append(temp)
         logging.info('Current CPU temperature: {}'.format(temp))
-        if tower.value == 0:
-            actual_percentage = count_percentage(
-                measurements, lambda x: x > args['temperature'])
-            if actual_percentage > args['percentage']:
-                logging.info('ON ise tower')
-                tower.on()
-        else:
-            actual_percentage = count_percentage(
-                measurements, lambda x: x < args['temperature'])
-            if actual_percentage > args['percentage']:
-                logging.info('OFF ice tower')
-                tower.off()
+        if len(measurements) == args['window']:
+            if tower.value == 0:
+                actual_percentage = count_percentage(
+                    measurements, lambda x: x > args['temperature'])
+                if actual_percentage > args['percentage']:
+                    tower.on()
+            else:
+                actual_percentage = count_percentage(
+                    measurements, lambda x: x < args['temperature'])
+                if actual_percentage > args['percentage']:
+                    tower.off()
 
 
 if __name__ == '__main__':
