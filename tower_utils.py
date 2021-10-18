@@ -23,7 +23,7 @@ class IceTower(gpiozero.OutputDevice):
         super(IceTower, self).off()
 
     def toggle(self):
-        logging.log('TOGGLE ice tower')
+        logging.info('TOGGLE ice tower')
         return super(IceTower, self).toggle()
 
 
