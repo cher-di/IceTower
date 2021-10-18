@@ -13,8 +13,6 @@ logging.basicConfig(stream=sys.stdout,
                     format='%(asctime)s [%(levelname)s] %(message)s')
 
 
-AVAILABLE_GPIO_PINS = list(range(2, 28))
-
 TOWER = None
 
 
@@ -38,7 +36,7 @@ def parse_args(args: list) -> argparse.Namespace:
     parser.add_argument('pin',
                         help='Num of gpio pin',
                         type=int,
-                        choices=AVAILABLE_GPIO_PINS)
+                        choices=tower_utils.AVAILABLE_GPIO_PINS)
     parser.add_argument('-d', '--delay',
                         dest='delay',
                         help='Delay between measurements (seconds)',

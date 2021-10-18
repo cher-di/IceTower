@@ -6,6 +6,9 @@ import psutil
 from typing import Callable, Sequence
 
 
+AVAILABLE_GPIO_PINS = list(range(2, 28))
+
+
 class IceTower(gpiozero.OutputDevice):
 
     def __init__(self, pin: int):
@@ -18,6 +21,10 @@ class IceTower(gpiozero.OutputDevice):
     def off(self):
         logging.info('OFF ice tower')
         super(IceTower, self).off()
+
+    def toggle(self):
+        logging.log('TOGGLE ice tower')
+        return super(IceTower, self).toggle()
 
 
 def current_cpu_temperature():
